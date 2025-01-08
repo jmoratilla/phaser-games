@@ -25,18 +25,19 @@ export class Game extends Scene
     {
         
         const textStyle: object = { fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff', stroke: '#000000', strokeThickness: 8 };
-        this.add.image(512, 384, 'background');
-
+        const background: Phaser.GameObjects.Image = this.add.image(512, 384, 'background');
         const shader: Phaser.GameObjects.Shader = this.add.shader('Tunnel', 512, 384, 1024, 768, [ 'tiles' ]).setVisible(false);
-
         const button: Phaser.GameObjects.Text = this.add.text(512, 384, 'Click me', textStyle).setOrigin(0.5);
+        const textScore: Phaser.GameObjects.Text = this.add.text(512, 450, 'Score: 0', textStyle).setOrigin(0.5);
+        
+
+        // Button configuration
         button.setDataEnabled();
         button.data.set('score', 0);
         button.setInteractive();
-        
-        const textScore: Phaser.GameObjects.Text = this.add.text(512, 450, 'Score: ' + button.data.get('score'), textStyle).setOrigin(0.5);
-        
 
+        // Button events
+        // Button click
         button.on('pointerdown', () => {
             this.buttonEffect(button);
             button.data.set('score', button.data.get('score') + 1);
@@ -44,6 +45,7 @@ export class Game extends Scene
             textScore.setText('Score: ' + button.data.get('score'));
         })
 
+        // Button score change
         button.on('changedata-score',  (_gameObject: Phaser.GameObjects.Text, value: any) => {
             // Milestones
             switch(value) {
