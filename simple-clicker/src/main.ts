@@ -1,4 +1,5 @@
 import { Game as MainGame } from './scenes/Game';
+import { Examples as ExampleGame } from './scenes/Examples';
 import { AUTO, Game, Scale,Types } from 'phaser';
 
 //  Find out more information about the Game Config at:
@@ -14,6 +15,7 @@ const config: Types.Core.GameConfig = {
         autoCenter: Scale.CENTER_BOTH
     },
     scene: [
+        ExampleGame,
         MainGame
     ]
 };
