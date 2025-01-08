@@ -7,15 +7,10 @@ export class Game extends Scene
         super('Game');
     }
 
-    score: number = 0;
-    button: Phaser.GameObjects.Text;
-    textScore: Phaser.GameObjects.Text;
-    clicked: boolean = false;
-    shader: Phaser.GameObjects.Shader;
-
     preload ()
     {
         this.load.setPath('assets');
+        this.load.audio('music', 'sounds/audio.mp3');
         
         this.load.image('background', 'bg.png');
         this.load.audio('click', 'sounds/click.wav');
@@ -24,7 +19,6 @@ export class Game extends Scene
         this.load.image('grass', 'textures/grass.png');
         this.load.image('tiles', 'textures/tiles.jpg');
         this.load.glsl('bundle', 'shaders/bundle.glsl.js');
-        this.load.audio('music', 'sounds/audio.mp3');
     }
 
     create ()
@@ -33,32 +27,26 @@ export class Game extends Scene
         const textStyle: object = { fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff', stroke: '#000000', strokeThickness: 8 };
         this.add.image(512, 384, 'background');
 
-        this.shader = this.add.shader('Tunnel', 512, 384, 512, 512, [ 'tiles', 'green', 'metal' ]).setVisible(false);
+        const shader: Phaser.GameObjects.Shader = this.add.shader('Tunnel', 512, 384, 1024, 768, [ 'tiles' ]).setVisible(false);
+
+        const button: Phaser.GameObjects.Text = this.add.text(512, 384, 'Click me', textStyle).setOrigin(0.5);
+        button.setDataEnabled();
+        button.data.set('score', 0);
+        button.setInteractive();
+        
+        const textScore: Phaser.GameObjects.Text = this.add.text(512, 450, 'Score: ' + button.data.get('score'), textStyle).setOrigin(0.5);
         
 
-
-        this.button = this.add.text(512, 384, 'Click me', textStyle).setInteractive().on('pointerdown', () => {
-            // this.button.setStyle({ color: '#a0a0a0' });
-            this.score++;
+        button.on('pointerdown', () => {
+            this.buttonEffect(button);
+            button.data.set('score', button.data.get('score') + 1);
             this.sound.play('click');
-            this.clicked = true;
-        }).setOrigin(0.5);
-        
+            textScore.setText('Score: ' + button.data.get('score'));
+        })
 
-        this.textScore = this.add.text(512, 450, 'Score: ' + this.score, textStyle).setOrigin(0.5);
-        
-
-    }
-
-    update() {
-        if (this.clicked)
-        {
-            this.buttonEffect();
-            this.textScore.setText('Score: ' + this.score);
-            this.clicked = false;
-
+        button.on('changedata-score',  (_gameObject: Phaser.GameObjects.Text, value: any) => {
             // Milestones
-            switch(this.score) {
+            switch(value) {
                 case 5:
                 {
                     this.sound.play('music');
@@ -66,37 +54,44 @@ export class Game extends Scene
                 }
                 case 15: 
                 {
-                    this.shader.setVisible(true);
+                    shader.setVisible(true);
+                    break;
+                }
+                case 20:
+                {
+                    shader.setChannel0('grass');
                     break;
                 }
                 case 30:
                 {
-                    var textureKey = this.shader.getUniform('iChannel0').textureKey;
-                    console.log(textureKey);
-                    this.shader.setChannel0('green');
+                    shader.setChannel0('metal');
                     break;
                 }
             }
-        }
+        }, this);
 
     }
 
-    buttonEffect()
+    buttonEffect(button: Phaser.GameObjects.Text)
     {
-        var effect: object = this.button.preFX.addShadow(0, 0, 0.006, 2, 0x333333, 10);
-        this.add.tween({
-            targets: effect,
-            x: 10,
-            y: -10,
-            duration: 200,
-            repeat: 0
-        });
-        this.add.tween({
-            targets: effect,
-            x: 0,
-            y: -0,
-            samples: 0,
-            duration: 0,
-        });
+        if (button.preFX) { 
+            var effect: object = button.preFX.addShadow(0, 0, 0.05, 1, 0x333333, 15);
+            this.add.tween({
+                targets: effect,
+                x: 10,
+                y: -10,
+                duration: 300,
+                repeat: 0
+            });
+            this.add.tween({
+                targets: effect,
+                x: 0,
+                y: -0,
+                samples: 10,
+                duration: 0,
+            });
+        } else {
+            console.warn('No preFX available');
+        }
     }
 }
