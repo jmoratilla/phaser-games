@@ -14,7 +14,8 @@ const config: Types.Core.GameConfig = {
         autoCenter: Scale.CENTER_BOTH
     },
     scene: [
-        MainGame
+        MainGame,
+        ExampleGame,
     ]
 };
 
