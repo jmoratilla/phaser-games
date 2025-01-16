@@ -1,6 +1,8 @@
 import { Scene } from "phaser";
 
 export class Game extends Scene {
+
+  // Instance variables
   options: {
     id: number;
     text: string;
@@ -9,11 +11,11 @@ export class Game extends Scene {
     action: () => void;
   }[];
 
+  score: number = 0;
+  
   constructor() {
     super("Game");
   }
-
-  score: number = 0;
 
   preload() {
     this.load.setPath("assets");
@@ -101,6 +103,7 @@ export class Game extends Scene {
       },
     ];
 
+    // TextStyle for the game
     const textStyle: object = {
       fontFamily: "Arial Black",
       fontSize: 38,
@@ -108,28 +111,44 @@ export class Game extends Scene {
       stroke: "#000000",
       strokeThickness: 8,
     };
+
+    // Background, shader, button and score
     const background: Phaser.GameObjects.Image = this.add.image(
       512,
       384,
       "background",
     );
+
     const shader: Phaser.GameObjects.Shader = this.add
       .shader("Tunnel", 512, 384, 1024, 768, ["tiles"])
       .setVisible(false);
-    const button: Phaser.GameObjects.Text = this.add
-      .text(512, 384, "Click me", textStyle)
-      .setOrigin(0.5);
-    const textScore: Phaser.GameObjects.Text = this.add
-      .text(512, 450, "Score: 0", textStyle)
-      .setOrigin(0.5);
-
+    
+    const containerButton: Phaser.GameObjects.Container = this.add.container(0, 0);
+    const bgButton: Phaser.GameObjects.Graphics = this.add.graphics();
+    bgButton.lineStyle(3, 0x0f0f0f, 1);
+    bgButton.strokeRoundedRect(0, 15, 200, 65, 16);
+    containerButton.add(bgButton);
     // Button configuration
+    const button: Phaser.GameObjects.Text = this.add
+      .text(100, 50, "Click me", textStyle)
+      .setOrigin(0.5);
+  
     button.setDataEnabled();
     button.data.set("score", 0);
     button.setInteractive();
 
+    containerButton.add(button);
+    containerButton.setPosition(
+      (Number(this.game.config.width) - Number(200)) / 2,
+      (Number(this.game.config.height) - Number(300)) / 2,
+    );
+
+    const textScore: Phaser.GameObjects.Text = this.add
+      .text(512, 350, "Score: 0", textStyle)
+      .setOrigin(0.5);
+
     // Button events
-    // Button click
+    // .onClick
     button.on("pointerdown", () => {
       this.buttonEffect(button);
       button.data.set("score", button.data.get("score") + 1);
@@ -139,13 +158,13 @@ export class Game extends Scene {
       textScore.setText("Score: " + this.score);
     });
 
-    // Marketplace
-    const container: Phaser.GameObjects.Container = this.add.container(0, 0);
+    // Menu
+    const containerMenu: Phaser.GameObjects.Container = this.add.container(0, 0);
     const bg1: Phaser.GameObjects.Graphics = this.add.graphics({
       fillStyle: { color: 0xffffff },
     });
     bg1.fillRect(0, 0, 400, 400);
-    container.add(bg1);
+    containerMenu.add(bg1);
 
     const closeButton: Phaser.GameObjects.Text = this.add
       .text(400 - 17, 17, "_", {
@@ -159,8 +178,8 @@ export class Game extends Scene {
       .setInteractive();
     closeButton.setDataEnabled();
     closeButton.data.set("state", "open");
-    container.add(closeButton);
-    container.setPosition(
+    containerMenu.add(closeButton);
+    containerMenu.setPosition(
       (Number(this.game.config.width) - Number(200)) / 2,
       (Number(this.game.config.height) + Number(700)) / 2,
     );
@@ -177,13 +196,13 @@ export class Game extends Scene {
         })
         .setOrigin(0);
       text.setName(option.name);
-      container.add(text);
+      containerMenu.add(text);
     });
 
     closeButton.on("pointerdown", () => {
       if (closeButton.data.get("state") === "close") {
         this.tweens.add({
-          targets: container,
+          targets: containerMenu,
           y: Number(this.game.config.height) / 2,
           duration: 500,
           ease: "Linear",
@@ -191,7 +210,7 @@ export class Game extends Scene {
         closeButton.data.set("state", "open");
       } else {
         this.tweens.add({
-          targets: container,
+          targets: containerMenu,
           y: 735,
           duration: 500,
           ease: "Linear",
@@ -207,28 +226,28 @@ export class Game extends Scene {
         // Milestones
         switch (value) {
           case 5: {
-            let option: Phaser.GameObjects.Text = container.getByName(0);
+            let option: Phaser.GameObjects.Text = containerMenu.getByName(0);
             option.setColor("#000000");
             option.setInteractive();
             this.sound.play("music");
             break;
           }
           case 15: {
-            let option: Phaser.GameObjects.Text = container.getByName(1);
+            let option: Phaser.GameObjects.Text = containerMenu.getByName(1);
             option.setColor("#000000");
             option.setInteractive();
             shader.setVisible(true);
             break;
           }
           case 20: {
-            let option: Phaser.GameObjects.Text = container.getByName(2);
+            let option: Phaser.GameObjects.Text = containerMenu.getByName(2);
             option.setColor("#000000");
             option.setInteractive();
             shader.setChannel0("grass");
             break;
           }
           case 30: {
-            let option: Phaser.GameObjects.Text = container.getByName(3);
+            let option: Phaser.GameObjects.Text = containerMenu.getByName(3);
             option.setColor("#000000");
             option.setInteractive();
             shader.setChannel0("metal");
