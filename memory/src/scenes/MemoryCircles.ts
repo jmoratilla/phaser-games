@@ -4,7 +4,7 @@ export class MemoryCircles extends Scene {
   camera: Phaser.Cameras.Scene2D.Camera;
   background: Phaser.GameObjects.Image;
   circles: Phaser.GameObjects.Group;
-  level: Number;
+  level: number;
 
   constructor() {
     super("MemoryCircles");
@@ -61,7 +61,6 @@ export class MemoryCircles extends Scene {
   }
 
   newLevel() {
-    // Level 1
     // After 3 seconds, black the screen
     // Hide all the circles
     // and create a new one, showing all the circles to the user
