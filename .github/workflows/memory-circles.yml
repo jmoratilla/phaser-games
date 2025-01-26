@@ -4,6 +4,7 @@ on:
       - main
     paths:
       - "memory/**"
+      - ".github/workflows/memory-circles.yml"
 
 defaults:
   run:

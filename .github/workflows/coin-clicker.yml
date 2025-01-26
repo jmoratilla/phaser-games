@@ -4,6 +4,7 @@ on:
       - main
     paths:
       - "coin-clicker/**" # it doesn't work with variables
+      - ".github/workflows/coin-clicker.yml"
 
 defaults:
   run:

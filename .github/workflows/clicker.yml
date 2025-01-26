@@ -4,6 +4,7 @@ on:
       - main
     paths:
       - "simple-clicker/**"
+      - ".github/workflows/clicker.yml"
 
 defaults:
   run:

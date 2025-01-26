@@ -4,6 +4,7 @@ on:
       - main
     paths:
       - "landing/**"
+      - ".github/workflows/landing.yml"
 
 defaults:
   run:
