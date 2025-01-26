@@ -18,7 +18,7 @@ export class Game extends Scene {
   create() {
     this.add.image(512, 384, "background");
     const logo = this.add.image(512, 100, "logo").setDepth(100);
-    const text = this.add
+    this.add
       .text(512, 200, "My games made with Phaser", {
         fontFamily: "Arial Black",
         fontSize: 38,
