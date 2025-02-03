@@ -60,6 +60,7 @@ export class Game extends Scene
         // Add logic to move the left paddle
         this.input.on('pointermove', (pointer) => {
             this.leftPaddle.body.y = pointer.y;
+            this.leftPaddle.y = pointer.y;
         });
 
         // Add logic to reset the ball if it goes out of bounds
@@ -82,7 +83,7 @@ export class Game extends Scene
         this.sound.play('pong');
         return (ball, paddle) => {
             ball.body.velocity.x *= -1;
-            
+
             // Depending on the distance to the paddle center, change the ball's velocity.y
             let diff = 0;
             if (ball.y < paddle.y) {
