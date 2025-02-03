@@ -20,7 +20,7 @@ jobs:
         with:
           node-version: "20.x"
       - run: npm ci
-      - run: npm run build -- --base=/memory/
+      - run: npm run build -- --base=/memory-circles/
       - uses: actions/upload-artifact@v4
         with:
           name: bundle
@@ -43,4 +43,4 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: "eu-west-1" # optional: defaults to us-east-1
-          DEST_DIR: memory # optional: defaults to entire repository
+          DEST_DIR: memory-circles # optional: defaults to entire repository
