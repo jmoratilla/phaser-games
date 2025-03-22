@@ -1,0 +1,27 @@
+name: Main Workflow
+
+on: 
+    push:
+        branches:
+            - main
+    workflow_dispatch:
+
+jobs:
+    landing:
+        uses: ./.github/workflows/landing.yml
+
+    clicker:
+        needs: landing
+        uses: ./.github/workflows/clicker.yml
+
+    coin-clicker:
+        needs: clicker
+        uses: ./.github/workflows/coin-clicker.yml
+
+    memory-circles:
+        needs: coin-clicker
+        uses: ./.github/workflows/memory-circles.yml
+
+    pong:
+        needs: memory-circles
+        uses: ./.github/workflows/pong.yml
