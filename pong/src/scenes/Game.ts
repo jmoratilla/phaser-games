@@ -28,6 +28,8 @@ export class Game extends Scene
     {
         this.middleLine = this.add.rectangle(Number(this.sys.game.config.width)/2, 0, 2, Number(this.sys.game.config.height), 0x606060).setOrigin(0.5,0);
         this.score = new Score();
+        this.add.text( 100, 10, 'Player 1 (W/S)', { fontSize: '24px', color: '#ffffff', fontStyle: 'bold' });
+        this.add.text( 700, 10, 'Player 2 (UP/DOWN)', { fontSize: '24px', color: '#ffffff', fontStyle: 'bold' });
         this.leftPaddle = new Paddle(this, 18, 384, 20, 100, 0x6060ff).setOrigin(0.5,0.5); // blue
         this.rightPaddle = new Paddle(this, 1000, 384, 20, 100, 0xff6060).setOrigin(0.5,0.5); // red
         this.ball = this.add.circle(512, 384, 10, 0xffffff); // white
