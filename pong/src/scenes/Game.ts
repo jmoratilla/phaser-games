@@ -11,17 +11,11 @@ export class Game extends Scene
     middleLine: Phaser.GameObjects.Rectangle;
     score: Score;
     result: Phaser.GameObjects.Text;
+    maxGoals: number = 10;
 
     constructor ()
     {
         super('Game');
-    }
-
-    preload ()
-    {
-        this.load.setPath('assets');
-        this.load.audio('pong', 'pong.wav');
-        
     }
 
     create ()
@@ -34,21 +28,18 @@ export class Game extends Scene
         this.rightPaddle = new Paddle(this, 1000, 384, 20, 100, 0xff6060).setOrigin(0.5,0.5); // red
         this.ball = this.add.circle(512, 384, 10, 0xffffff); // white
         this.result = this.add.text( 512, 0, this.score.toString(), { fontSize: '48px', color: '#ffffff', fontStyle: 'bold' }).setOrigin(0.5, 0);
-        
+
         // Physics
         this.physics.world.setBounds(0, 0, 1024, 768);
         this.physics.world.setBoundsCollision(false, false, true, true);
-        this.physics.world.enable(this.ball, 0);
-    
+        this.physics.add.existing(this.ball, false);
+
         // Add collisions between the paddles and the ball
         this.physics.add.collider(this.ball, this.leftPaddle, this.paddleHit, undefined, this);
         this.physics.add.collider(this.ball, this.rightPaddle, this.paddleHit, undefined, this);
         
-        // Add logic to move the ball
-        this.ball.body
-            .setCollideWorldBounds(true)
-            .setBounce(1,1)
-            .setVelocity(250,0);
+        // Start the game
+        this.gameStart();
 
         // Debug
         this.input.enableDebug(this.leftPaddle, 0xff00ff);
@@ -58,21 +49,21 @@ export class Game extends Scene
     update ()
     {
         // Keyboard input to control the left paddle with (W/S) keys
-        if (this.input.keyboard.addKey('W').isDown) {
+        if (this.input.keyboard.addKey('W').isDown && this.leftPaddle.y > 50) {
             this.leftPaddle.y -= 5;
             this.leftPaddle.body.y -= 5;
         }
-        if (this.input.keyboard.addKey('S').isDown) {
+        if (this.input.keyboard.addKey('S').isDown && this.leftPaddle.y < 718) {
             this.leftPaddle.y += 5;
             this.leftPaddle.body.y += 5;
         }
 
         // Keyboard input to control the right paddle with cursor keys
-        if (this.input.keyboard.addKey('UP').isDown) {
+        if (this.input.keyboard.addKey('UP').isDown && this.rightPaddle.y > 50) {
             this.rightPaddle.y -= 5;
             this.rightPaddle.body.y -= 5;
         }
-        if (this.input.keyboard.addKey('DOWN').isDown) {
+        if (this.input.keyboard.addKey('DOWN').isDown && this.rightPaddle.y < 718) {
             this.rightPaddle.y += 5;
             this.rightPaddle.body.y += 5;
         }
@@ -89,6 +80,27 @@ export class Game extends Scene
             this.score.update(this.score.left + 1, this.score.right);
             this.result.setText(this.score.toString());
         }
+
+        if (this.score.left >= this.maxGoals || this.score.right >= this.maxGoals) {
+            this.gameOver();
+        }
+
+        // // If left click is pressed, pause the game
+        // if (this.input.activePointer.leftButtonDown()) {
+        //     // Get the current scene
+        //     let gameScene = this.scene.get('Game');
+        //     const pausedMsg = this.add.text( 512, 384, 'Game Paused', { fontSize: '48px', color: '#ffffff', fontStyle: 'bold' }).setOrigin(0.5, 0.5);
+        //     pausedMsg.setVisible(false);
+        //     if (!gameScene.sys.isSleeping()) {
+        //         pausedMsg.setVisible(true);
+        //         gameScene.sys.sleep();
+        //     } else {
+        //         pausedMsg.setVisible(false);
+        //         gameScene.sys.wake();
+        //     }
+
+        // }
+
     }
     
     paddleHit()
@@ -120,5 +132,38 @@ export class Game extends Scene
 
         // Set the new velocity
         velocity.y = Math.sin(angle) * 250;
+        paddle.body.velocity.y = velocity.y;
+    }
+
+    gameStart()
+    {
+        // Add banner 'Press ANY key to start'
+        const startMsg = this.add.text( 512, 384, 'Press ANY key to start', { fontSize: '48px', color: '#ffffff', fontStyle: 'bold' }).setOrigin(0.5, 0.5);
+        this.input.keyboard.once('keydown', () => {
+            // Play soundtrack
+            this.sound.play('soundtrack', { loop: true });
+
+            startMsg.destroy();
+            // Add logic to move the ball
+            this.ball.body
+            .setCollideWorldBounds(true)
+            .setBounce(1,1)
+            .setVelocity(300,0);
+        });
+
+    }
+
+    gameOver()
+    {
+        // Stop the soundtrack
+        this.sound.stopAll();
+        this.sound.removeAll();
+        
+        // Add game over message
+        this.add.text( 512, 384, 'Game Over', { fontSize: '48px', color: '#ffffff', fontStyle: 'bold' }).setOrigin(0.5, 0.5);
+        
+        this.input.keyboard.once('keydown', () => {
+            this.scene.restart();
+        });
     }
 }
