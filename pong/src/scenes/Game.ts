@@ -28,27 +28,25 @@ export class Game extends Scene
     {
         this.middleLine = this.add.rectangle(Number(this.sys.game.config.width)/2, 0, 2, Number(this.sys.game.config.height), 0x606060).setOrigin(0.5,0);
         this.score = new Score();
-        this.leftPaddle = new Paddle(this, 18, 384, 20, 100, 0x6060ff); // blue
-        this.rightPaddle = new Paddle(this, 1000, 384, 20, 100, 0xff6060); // red
+        this.leftPaddle = new Paddle(this, 18, 384, 20, 100, 0x6060ff).setOrigin(0.5,0.5); // blue
+        this.rightPaddle = new Paddle(this, 1000, 384, 20, 100, 0xff6060).setOrigin(0.5,0.5); // red
         this.ball = this.add.circle(512, 384, 10, 0xffffff); // white
         this.result = this.add.text( 512, 0, this.score.toString(), { fontSize: '48px', color: '#ffffff', fontStyle: 'bold' }).setOrigin(0.5, 0);
         
-
         // Physics
         this.physics.world.setBounds(0, 0, 1024, 768);
         this.physics.world.setBoundsCollision(false, false, true, true);
         this.physics.world.enable(this.ball, 0);
     
-        // Add collisions
-        this.physics.add.collider(this.ball, this.leftPaddle, () => this.paddleHit(), undefined, this);
-        // this.physics.add.collider(this.ball, this.rightPaddle, () => this.paddleHit(), undefined, this);
-        
+        // Add collisions between the paddles and the ball
+        this.physics.add.collider(this.ball, this.leftPaddle, this.paddleHit, undefined, this);
+        this.physics.add.collider(this.ball, this.rightPaddle, this.paddleHit, undefined, this);
         
         // Add logic to move the ball
         this.ball.body
             .setCollideWorldBounds(true)
             .setBounce(1,1)
-            .setVelocity(200,0);
+            .setVelocity(250,0);
 
         // Debug
         this.input.enableDebug(this.leftPaddle, 0xff00ff);
@@ -57,11 +55,25 @@ export class Game extends Scene
 
     update ()
     {
-        // Add logic to move the left paddle
-        this.input.on('pointermove', (pointer) => {
-            this.leftPaddle.body.y = pointer.y;
-            this.leftPaddle.y = pointer.y;
-        });
+        // Keyboard input to control the left paddle with (W/S) keys
+        if (this.input.keyboard.addKey('W').isDown) {
+            this.leftPaddle.y -= 5;
+            this.leftPaddle.body.y -= 5;
+        }
+        if (this.input.keyboard.addKey('S').isDown) {
+            this.leftPaddle.y += 5;
+            this.leftPaddle.body.y += 5;
+        }
+
+        // Keyboard input to control the right paddle with cursor keys
+        if (this.input.keyboard.addKey('UP').isDown) {
+            this.rightPaddle.y -= 5;
+            this.rightPaddle.body.y -= 5;
+        }
+        if (this.input.keyboard.addKey('DOWN').isDown) {
+            this.rightPaddle.y += 5;
+            this.rightPaddle.body.y += 5;
+        }
 
         // Add logic to reset the ball if it goes out of bounds
         if (this.ball.x < 0) {
@@ -81,20 +93,30 @@ export class Game extends Scene
     {
         // Play sound
         this.sound.play('pong');
-        return (ball, paddle) => {
-            ball.body.velocity.x *= -1;
 
-            // Depending on the distance to the paddle center, change the ball's velocity.y
-            let diff = 0;
-            if (ball.y < paddle.y) {
-                diff = paddle.y - ball.y;
-                ball.body.velocity.y = (-10 * diff);
-            } else if (ball.y > paddle.y) {
-                diff = ball.y - paddle.y;
-                ball.body.velocity.y = (10 * diff);
-            } else {
-                ball.body.velocity.y = 2 + Math.random() * 8;
-            }
-        };
+        // Increase ball speed
+        let velocity = (this.ball.body as Phaser.Physics.Arcade.Body).velocity;
+        if (velocity.x < 0) {
+            velocity.x -= 25;
+        }
+        else {
+            velocity.x += 25;
+        }
+
+        // Determine the paddle that hits the ball
+        let paddle = this.leftPaddle;
+        if (this.ball.x > 512) {
+            paddle = this.rightPaddle;
+        }
+
+        // Randomize vertical direction depending on the distance of the ball to the the paddle center when hit.
+        // If it hits the center, it will go straight up or down.
+        let distance = this.ball.y - paddle.y;
+
+        // Calculate the angle of the ball
+        let angle = Phaser.Math.DegToRad(45 * (distance / (paddle.height / 2)));
+
+        // Set the new velocity
+        velocity.y = Math.sin(angle) * 250;
     }
 }
