@@ -13,6 +13,7 @@ export class Game extends Scene {
     this.load.image("coin-clicker", "coin-clicker.png");
     this.load.image("memory", "memory.png");
     this.load.image("clicker", "clicker.png");
+    this.load.image("pong", "pong.png");
   }
 
   create() {
@@ -40,10 +41,6 @@ export class Game extends Scene {
         x: 200,
         y: 350,
         key: "coin-clicker",
-        scale: {
-          x: 0.2,
-          y: 0.2,
-        },
       })
       .setInteractive();
     cc.on("pointerdown", () => {
@@ -55,10 +52,6 @@ export class Game extends Scene {
         x: 800,
         y: 350,
         key: "memory",
-        scale: {
-          x: 0.2,
-          y: 0.2,
-        },
       })
       .setInteractive();
     mc.on("pointerdown", () => {
@@ -70,14 +63,21 @@ export class Game extends Scene {
         x: 500,
         y: 350,
         key: "clicker",
-        scale: {
-          x: 0.2,
-          y: 0.2,
-        },
       })
       .setInteractive();
     sc.on("pointerdown", () => {
       window.open("https://games.moratilla.com/simple-clicker/", "_blank");
     });
+
+    const pong = this.make
+      .image({
+        x: 200,
+        y: 550,
+        key: "pong",
+      })
+      .setInteractive();
+    pong.on("pointerdown", () => {
+    window.open("https://games.moratilla.com/pong/", "_blank");
+   });
   }
 }
