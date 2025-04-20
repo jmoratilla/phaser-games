@@ -23,11 +23,9 @@ jobs:
     landing:
         name: Build and Deploy Landing Page
         runs-on: ubuntu-latest
-        env:
-            NAME: "landing"
         defaults:
             run:
-                working-directory: "./$NAME"
+                working-directory: "./landing"
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
@@ -50,13 +48,14 @@ jobs:
 
 
     clicker:
+        needs: landing
         name: Build and Deploy Clicker Game
         runs-on: ubuntu-latest
         env:
             NAME: "simple-clicker"
         defaults:
             run:
-                working-directory: "./$NAME"
+                working-directory: "./simple-clicker" # does not work with variables
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
