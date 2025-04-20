@@ -55,7 +55,7 @@ export class Game extends Scene {
       })
       .setInteractive();
     mc.on("pointerdown", () => {
-      window.open("https://games.moratilla.com/memory-circles/", "_blank");
+      window.open("https://games.moratilla.com/memory/", "_blank");
     });
 
     const sc = this.make
