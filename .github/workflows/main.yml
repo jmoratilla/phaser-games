@@ -17,6 +17,7 @@ jobs:
     landing:
         name: Build and Deploy Landing Page
         runs-on: ubuntu-latest
+        environment: production
         defaults:
             run:
                 working-directory: "./landing"
@@ -47,6 +48,7 @@ jobs:
 
     clicker:
         needs: landing
+        environment: production
         name: Build and Deploy Clicker Game
         runs-on: ubuntu-latest
         env:
